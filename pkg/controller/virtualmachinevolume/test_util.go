@@ -98,7 +98,7 @@ func newTestImage() *hc.VirtualMachineImage {
 			Source: hc.VirtualMachineImageSource{
 				HTTP: "https://kr.tmaxsoft.com/main.do",
 			},
-			PVC: corev1.PersistentVolumeClaimSpec{
+			PVC: &corev1.PersistentVolumeClaimSpec{
 				AccessModes: []corev1.PersistentVolumeAccessMode{
 					corev1.ReadWriteOnce,
 				},

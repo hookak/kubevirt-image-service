@@ -1,28 +1,20 @@
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
-  name: virtualmachineimages.hypercloud.tmaxanc.com
+  name: localuploadproxies.hypercloud.tmaxanc.com
 spec:
-  additionalPrinterColumns:
-  - JSONPath: .status.state
-    description: Current state of VirtualMachineImage
-    name: State
-    type: string
   group: hypercloud.tmaxanc.com
   names:
-    kind: VirtualMachineImage
-    listKind: VirtualMachineImageList
-    plural: virtualmachineimages
-    shortNames:
-    - vmim
-    singular: virtualmachineimage
+    kind: LocalUploadProxy
+    listKind: LocalUploadProxyList
+    plural: localuploadproxies
+    singular: localuploadproxy
   scope: Namespaced
   subresources:
     status: {}
   validation:
     openAPIV3Schema:
-      description: VirtualMachineImage is the Schema for the virtualmachineimages
-        API
+      description: LocalUploadProxy is the Schema for the localuploadproxies API
       properties:
         apiVersion:
           description: 'APIVersion defines the versioned schema of this representation
@@ -37,8 +29,14 @@ spec:
         metadata:
           type: object
         spec:
-          description: VirtualMachineImageSpec defines the desired state of VirtualMachineImage
+          description: LocalUploadProxySpec defines the desired state of LocalUploadProxy
           properties:
+            nodeName:
+              description: 'INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
+                Important: Run "operator-sdk generate k8s" to regenerate code after
+                modifying this file Add custom validation using kubebuilder tags:
+                https://book-v1.book.kubebuilder.io/beyond_basics/generating_crd.html'
+              type: string
             pvc:
               description: PersistentVolumeClaimSpec describes the common attributes
                 of storage devices and allows a Source for provider-specific attributes
@@ -161,26 +159,15 @@ spec:
                     backing this claim.
                   type: string
               type: object
-            snapshotClassName:
-              type: string
-            source:
-              description: VirtualMachineImageSource provides parameters to create
-                a VirtualMachineImage from an HTTP source
-              properties:
-                http:
-                  type: string
-                local:
-                  type: string
-              type: object
           required:
-          - snapshotClassName
-          - source
+          - nodeName
+          - pvc
           type: object
         status:
-          description: VirtualMachineImageStatus defines the observed state of VirtualMachineImage
+          description: LocalUploadProxyStatus defines the observed state of LocalUploadProxy
           properties:
             conditions:
-              description: Conditions indicate current conditions of VirtualMachineImage
+              description: Conditions indicate current conditions of LocalUploadProxy
               items:
                 description: Condition indicates observed condition of an object
                 properties:
@@ -226,10 +213,12 @@ spec:
                 - type
                 type: object
               type: array
-            pvcName:
-              type: string
             state:
-              description: State is the current state of VirtualMachineImage
+              description: 'INSERT ADDITIONAL STATUS FIELD - define observed state
+                of cluster Important: Run "operator-sdk generate k8s" to regenerate
+                code after modifying this file Add custom validation using kubebuilder
+                tags: https://book-v1.book.kubebuilder.io/beyond_basics/generating_crd.html
+                State is the current state of LocalUploadProxy'
               type: string
           required:
           - state

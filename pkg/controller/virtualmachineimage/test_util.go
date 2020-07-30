@@ -38,7 +38,7 @@ func newTestVmi() *hc.VirtualMachineImage {
 			Source: hc.VirtualMachineImageSource{
 				HTTP: "https://download.cirros-cloud.net/contrib/0.3.0/cirros-0.3.0-i386-disk.img",
 			},
-			PVC: corev1.PersistentVolumeClaimSpec{
+			PVC: &corev1.PersistentVolumeClaimSpec{
 				AccessModes: []corev1.PersistentVolumeAccessMode{corev1.ReadWriteOnce},
 				Resources: corev1.ResourceRequirements{
 					Requests: map[corev1.ResourceName]resource.Quantity{

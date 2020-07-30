@@ -1,0 +1,14 @@
+apiVersion: hypercloud.tmaxanc.com/v1alpha1
+kind: LocalUploadProxy
+metadata:
+  name: example-localuploadproxy
+spec:
+  nodeName: young
+  pvc:
+    volumeMode: Block
+    accessModes:
+      - ReadWriteMany
+    resources:
+      requests:
+        storage: "3Gi"
+    storageClassName: rook-ceph-block

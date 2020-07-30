@@ -16,7 +16,9 @@ import (
 
 func (r *ReconcileVirtualMachineImage) syncSnapshot() error {
 	imported, found, err := r.isPvcImported()
-	if err != nil {
+	if r.vmi.Spec.Source.Local != "" {
+		imported = true
+	} else if err != nil {
 		return err
 	} else if !found {
 		return nil
@@ -72,7 +74,7 @@ func newSnapshot(vmi *hc.VirtualMachineImage, scheme *runtime.Scheme) (*snapshot
 		Spec: snapshotv1alpha1.VolumeSnapshotSpec{
 			Source: &corev1.TypedLocalObjectReference{
 				Kind: "PersistentVolumeClaim",
-				Name: GetPvcNameFromVmiName(vmi.Name),
+				Name: vmi.Status.PvcName,
 			},
 			VolumeSnapshotClassName: &vmi.Spec.SnapshotClassName,
 		},

@@ -73,6 +73,7 @@ rules:
   - '*'
   - virtualmachinevolumes
   - virtualmachinevolumeexports
+  - localuploadproxies
   verbs:
   - create
   - delete

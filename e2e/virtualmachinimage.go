@@ -116,7 +116,7 @@ func newVmi(ns, name string) *v1alpha1.VirtualMachineImage {
 			Source: v1alpha1.VirtualMachineImageSource{
 				HTTP: "https://download.cirros-cloud.net/contrib/0.3.0/cirros-0.3.0-i386-disk.img",
 			},
-			PVC: corev1.PersistentVolumeClaimSpec{
+			PVC: &corev1.PersistentVolumeClaimSpec{
 				VolumeMode:  &volumeMode,
 				AccessModes: []corev1.PersistentVolumeAccessMode{corev1.ReadWriteOnce},
 				Resources: corev1.ResourceRequirements{

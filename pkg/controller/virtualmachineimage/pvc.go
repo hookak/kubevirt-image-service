@@ -56,7 +56,7 @@ func newPvc(vmi *hc.VirtualMachineImage, scheme *runtime.Scheme) (*corev1.Persis
 			Namespace:   vmi.Namespace,
 			Annotations: map[string]string{"imported": "no"},
 		},
-		Spec: vmi.Spec.PVC,
+		Spec: *vmi.Spec.PVC,
 	}
 	if err := controllerutil.SetControllerReference(vmi, pvc, scheme); err != nil {
 		return nil, err

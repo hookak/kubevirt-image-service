@@ -7,14 +7,15 @@ import (
 
 // VirtualMachineImageSource provides parameters to create a VirtualMachineImage from an HTTP source
 type VirtualMachineImageSource struct {
-	HTTP string `json:"http"`
+	HTTP  string `json:"http,omitempty"`
+	Local string `json:"local,omitempty"`
 }
 
 // VirtualMachineImageSpec defines the desired state of VirtualMachineImage
 type VirtualMachineImageSpec struct {
-	Source            VirtualMachineImageSource        `json:"source"`
-	PVC               corev1.PersistentVolumeClaimSpec `json:"pvc"`
-	SnapshotClassName string                           `json:"snapshotClassName"`
+	Source            VirtualMachineImageSource         `json:"source"`
+	PVC               *corev1.PersistentVolumeClaimSpec `json:"pvc,omitempty"`
+	SnapshotClassName string                            `json:"snapshotClassName"`
 }
 
 // VirtualMachineImageState is the current state of VirtualMachineImage
@@ -44,6 +45,7 @@ type VirtualMachineImageStatus struct {
 	// Conditions indicate current conditions of VirtualMachineImage
 	// +optional
 	Conditions []Condition `json:"conditions,omitempty"`
+	PvcName    string      `json:"pvcName,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -9,6 +9,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/klog"
 	hc "kubevirt-image-service/pkg/apis/hypercloud/v1alpha1"
+	"kubevirt-image-service/pkg/controller/localuploadproxy"
 	"kubevirt-image-service/pkg/util"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller"
@@ -82,6 +83,20 @@ func (r *ReconcileVirtualMachineImage) Reconcile(request reconcile.Request) (rec
 		if err := r.validateVirtualMachineImageSpec(); err != nil {
 			return err
 		}
+		if err := r.updateStateWithPvcName(); err != nil {
+			return err
+		}
+		if r.vmi.Spec.Source.Local != "" {
+			// update pvc owner and delete local upload proxy
+			if err := r.syncLocalUploadProxyPvc(); err != nil {
+				return err
+			}
+			// create snapshot
+			if err := r.syncSnapshot(); err != nil {
+				return err
+			}
+			return nil
+		}
 		// pvc가 없으면 상태를 업데이트하고 pvc를 생성한다.
 		if err := r.syncPvc(); err != nil {
 			return err
@@ -119,12 +134,26 @@ func (r *ReconcileVirtualMachineImage) updateStateWithReadyToUse(state hc.Virtua
 }
 
 func (r *ReconcileVirtualMachineImage) validateVirtualMachineImageSpec() error {
-	if r.vmi.Spec.PVC.VolumeMode == nil || *r.vmi.Spec.PVC.VolumeMode != corev1.PersistentVolumeBlock {
-		return goerrors.New("VolumeMode in pvc is invalid. Only 'Block' can be used")
-	}
-	_, found := r.vmi.Spec.PVC.Resources.Requests[corev1.ResourceStorage]
-	if !found {
-		return goerrors.New("storage request in pvc is missing")
+	if r.vmi.Spec.Source.Local == "" {
+		if r.vmi.Spec.PVC == nil {
+			return goerrors.New("spec.pvc must not be null when source is not 'local'")
+		}
+		if r.vmi.Spec.PVC.VolumeMode == nil || *r.vmi.Spec.PVC.VolumeMode != corev1.PersistentVolumeBlock {
+			return goerrors.New("VolumeMode in pvc is invalid. Only 'Block' can be used")
+		}
+		_, found := r.vmi.Spec.PVC.Resources.Requests[corev1.ResourceStorage]
+		if !found {
+			return goerrors.New("storage request in pvc is missing")
+		}
 	}
 	return nil
+}
+
+func (r *ReconcileVirtualMachineImage) updateStateWithPvcName() error {
+	if r.vmi.Spec.Source.Local != "" {
+		r.vmi.Status.PvcName = localuploadproxy.GetPvcNameFromLocalUploadProxyName(r.vmi.Spec.Source.Local)
+	} else {
+		r.vmi.Status.PvcName = GetPvcNameFromVmiName(r.vmi.Name)
+	}
+	return r.client.Status().Update(context.TODO(), r.vmi)
 }

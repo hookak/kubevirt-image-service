@@ -30,6 +30,9 @@ func TestKubevirtImageService(t *testing.T) {
 	if err := virtualMachineVolumeExportTest(t, ctx); err != nil {
 		t.Fatal(err)
 	}
+	if err := localUploadProxyTest(t, ctx); err != nil {
+		t.Fatal(err)
+	}
 }
 
 func deployResources(t *testing.T, ctx *framework.Context) error {
