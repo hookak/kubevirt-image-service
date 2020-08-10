@@ -35,9 +35,9 @@ const (
 	ExporterName = "kubevirt-image-service-exporter"
 	// ExporterImage indicates exporter container image
 	ExporterImage = "quay.io/tmaxanc/kubevirt-image-service-exporter:latest"
-	// ExporterDestinationLocal indicates Destaination to export is local
+	// ExporterDestinationLocal indicates Destination to export is local
 	ExporterDestinationLocal = "local"
-	// ExporterDestinationS3 indicates Destaination to export is s3
+	// ExporterDestinationS3 indicates Destination to export is s3
 	ExporterDestinationS3 = "s3"
 )
 
